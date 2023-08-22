@@ -1,0 +1,5 @@
+# dune init proj autodiff
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Workspace root: /Users/brian/Programming/autodiff
+# Auto-detected concurrency: 10
