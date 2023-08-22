@@ -1,3 +1,5 @@
+import math
+
 # class Var:
 #     def __init__(self, val):
 #         self.val = val
@@ -89,10 +91,33 @@ class Sub:
         if not self.result:
             self.a.grad += self.grad
             self.b.grad -= self.grad
-            
+
             self.result = self.a() - self.b()
         
         return self.result
+
+class Power:
+    def __init__(self, a, b, grad=0):
+        self.a = a
+        self.b = b
+        self.result = None
+        self.grad = grad
+
+    def __str__(self):
+        return f"({self.a} ** {self.b})"
+
+    def __repr__(self):
+        return f"({self.a} ** {self.b})"
+
+    def __call__(self):
+        if not self.result:
+            self.a.grad += self.grad * self.b() * (self.a() ** (self.b()-1))
+            self.b.grad += self.grad * (self.a()**self.b()) * math.log(self.a())
+
+            self.result = self.a() ** self.b()
+
+        return self.result
+
 
 class Const:
     def __init__(self, a, name=None, grad=0):
@@ -109,9 +134,20 @@ class Const:
     def __repr__(self):
         return f"({self.name}: {self.a})"
 
-def get_f(x,y):
+def get_f1(x,y):
     x = Const(x, "x")
     y = Const(y, "y")
     compute_graph = Add(Mul(x, x), Mul(x, y), grad=1)
     result = compute_graph()
     return (result, x.grad, y.grad)
+
+
+def get_f2(x,y):
+    x = Const(x, "x")
+    y = Const(y, "y")
+
+    compute_graph = Power(Const(2, "2"), Power(x, y), grad=1)
+
+    result = compute_graph()
+    return (result, x.grad, y.grad)
+
